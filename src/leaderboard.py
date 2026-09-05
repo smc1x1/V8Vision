@@ -94,8 +94,13 @@ def get_replay_feed(race_id):
 
 
 def print_leaderboard(live_feed):
+    
     print_header(live_feed)
     print_table_header()
+
+    if not live_feed["vehicles"]:
+        print("\nNo live race data...")
+        return
 
     best_overall = min(
         vehicle["best_lap_time"]
@@ -153,12 +158,14 @@ def print_vehicle(vehicle, best_overall):
     delta_display = format_delta(vehicle)
 
     color = "\033[90m" if vehicle["status"] != 1 else ""
+    chase = "\033[94m" if "(C)" in vehicle["driver"]["last_name"] else ""
 
     name = (
         vehicle["driver"]["last_name"]
         .replace("(i)", "")
         .replace("#", "")
         .replace("*", "")
+        .replace("(C)", "")
         .strip()
     )
 
@@ -174,7 +181,10 @@ def print_vehicle(vehicle, best_overall):
         f"{color}"
         f"P{vehicle['running_position']:<4}"
         f"#{vehicle['vehicle_number']:<4}"
+        f"{chase}"
         f"{name:<15}"
+        f"\033[0m"
+        f"{color}"
         f"{delta_display:<8}"
         f"{vehicle['last_lap_time']:<8.3f}"
         f"{pit_lap:<5}"
